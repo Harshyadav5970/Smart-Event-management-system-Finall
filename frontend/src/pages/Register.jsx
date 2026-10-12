@@ -28,7 +28,9 @@ export default function Register({ onSwitchToLogin }) {
     setErrorMsg('');
     setLoading(true);
     const result = await register(formData);
-    if (!result || !result.success) {
+    if (result && result.success) {
+      onSwitchToLogin();
+    } else {
       setErrorMsg(result?.message || 'Registration failed. Please check inputs and try again.');
     }
     setLoading(false);

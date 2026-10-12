@@ -45,49 +45,31 @@ export default function Login({ onSwitchToRegister }) {
           <p className="text-xs text-slate-500 mt-1 font-medium">
             Smart College Event & Fest Management System
           </p>
-          <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 bg-white/80 backdrop-blur-md rounded-full border border-slate-200/80 text-[11px] font-bold text-slate-700 shadow-xs">
-            <GraduationCap className="w-3.5 h-3.5 text-brand-600" />
-            <span>Harsh Yadav (Roll 129, TYCS-B)</span>
-          </div>
         </div>
 
-        {/* 1-Click Viva Demo Switcher (Featured prominently for professors and evaluation) */}
+        {/* 1-Click Demo Login Switcher */}
         <div className="mb-6 p-4 rounded-3xl bg-white/90 backdrop-blur-xl border border-white shadow-soft">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              1-Click Viva Evaluation Demo
+              1-Click Demo Login
             </span>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">
               Instant Access
             </span>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <button
               type="button"
               onClick={() => demoLogin('student')}
-              className="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 text-left transition-all flex items-center justify-between group cursor-pointer"
+              className="w-full py-2.5 px-3.5 rounded-xl bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 text-left transition-all flex items-center justify-between group cursor-pointer"
             >
               <div>
                 <p className="text-xs font-bold text-slate-800 group-hover:text-brand-700">
-                  🎓 Harsh Yadav (Student)
+                  🎓 Student
                 </p>
-                <p className="text-[10px] text-slate-500">harshlyadav8105@gmail.com • Pre-registered passes</p>
-              </div>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => demoLogin('organizer')}
-              className="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-left transition-all flex items-center justify-between group cursor-pointer"
-            >
-              <div>
-                <p className="text-xs font-bold text-slate-800 group-hover:text-indigo-700">
-                  ⚡ Tech Council (Club Organizer)
-                </p>
-                <p className="text-[10px] text-slate-500">techclub@college.edu • Gate scanner & stats</p>
+                <p className="text-[10px] text-slate-500">student@college.edu • Pre-registered passes</p>
               </div>
               <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -95,13 +77,13 @@ export default function Login({ onSwitchToRegister }) {
             <button
               type="button"
               onClick={() => demoLogin('admin')}
-              className="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-purple-50 border border-slate-200 hover:border-purple-300 text-left transition-all flex items-center justify-between group cursor-pointer"
+              className="w-full py-2.5 px-3.5 rounded-xl bg-slate-50 hover:bg-purple-50 border border-slate-200 hover:border-purple-300 text-left transition-all flex items-center justify-between group cursor-pointer"
             >
               <div>
                 <p className="text-xs font-bold text-slate-800 group-hover:text-purple-700">
-                  🛡️ Faculty Administration (HOD)
+                  🛡️ Admin
                 </p>
-                <p className="text-[10px] text-slate-500">admin@college.edu • Overall fest control</p>
+                <p className="text-[10px] text-slate-500">admin@college.edu • Overall fest control & management</p>
               </div>
               <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -140,7 +122,7 @@ export default function Login({ onSwitchToRegister }) {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. harsh@college.edu"
+                  placeholder="e.g. student@college.edu"
                   className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-500 font-medium"
                 />
               </div>

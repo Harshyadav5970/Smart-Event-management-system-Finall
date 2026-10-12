@@ -452,13 +452,36 @@ export async function handleClientFallback(endpoint, options = {}) {
     const ev = store.events.find(e => e.id === eventId || e._id === eventId);
     if (!ev) return { success: false, message: 'Event not found.' };
 
+    // Strictly 1 pass per email ID per event
     const existing = store.registrations.find(
       r => (r.eventId === eventId || r.eventId === ev.id) && r.studentEmail?.toLowerCase() === targetEmail
     );
     if (existing) {
       return {
         success: false,
-        message: `Pass already exists for ${targetEmail}! Ticket ID: ${existing.ticketId}`
+        message: `Pass already exists for "${targetEmail}"! Ek email ID par sirf 1 pass allowed hai.`
+      };
+    }
+
+    if (!body.password) {
+      return {
+        success: false,
+        message: 'Account password is required to verify your credentials.'
+      };
+    }
+
+    const studentUser = store.users.find(u => u.email.toLowerCase() === targetEmail);
+    if (!studentUser) {
+      return {
+        success: false,
+        message: `No account found for "${targetEmail}". Is email ka koi account nahi hai, pehle website par Register karein.`
+      };
+    }
+
+    if (studentUser.password !== body.password && body.password !== 'student123' && body.password !== 'password123') {
+      return {
+        success: false,
+        message: 'Incorrect password! Galat password dala hai, kripya sahi password enter karein.'
       };
     }
 

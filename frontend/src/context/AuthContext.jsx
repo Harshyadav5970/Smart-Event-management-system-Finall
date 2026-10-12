@@ -64,15 +64,12 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Sign up
+  // Sign up (Does NOT auto-login, redirects to Login page)
   const register = async (formData) => {
     const res = await api.post('/auth/register', formData);
-    if (res.success && res.token) {
-      localStorage.setItem('eventhub_token', res.token);
-      setToken(res.token);
-      setUser(res.user);
-      showToast('Registration successful! Welcome to EventHub.', 'success');
-      return { success: true };
+    if (res.success) {
+      showToast('Registration successful! Please login with your email and password.', 'success');
+      return { success: true, email: formData.email };
     } else {
       showToast(res.message || 'Registration failed.', 'error');
       return { success: false, message: res.message };

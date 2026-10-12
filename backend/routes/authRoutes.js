@@ -215,18 +215,22 @@ router.post('/demo-login', async (req, res) => {
     const { role } = req.body; // 'student' | 'organizer' | 'admin'
 
     const emailMap = {
-      student: 'harsh@college.edu',
+      student: 'student@college.edu',
       organizer: 'techclub@college.edu',
       admin: 'admin@college.edu'
     };
 
-    const targetEmail = emailMap[role] || 'harsh@college.edu';
+    const targetEmail = emailMap[role] || 'student@college.edu';
     let user = await UserModel.findOne({ email: targetEmail });
+
+    if (!user && role === 'student') {
+      user = await UserModel.findOne({ email: 'harsh@college.edu' });
+    }
 
     // Fallback if demo user isn't found
     if (!user) {
       user = await UserModel.create({
-        name: role === 'student' ? 'Harsh Yadav' : (role === 'organizer' ? 'Tech Club Council' : 'HOD / Faculty Admin'),
+        name: role === 'student' ? 'Student' : (role === 'organizer' ? 'Tech Club Council' : 'HOD / Faculty Admin'),
         email: targetEmail,
         password: await bcrypt.hash(role === 'student' ? 'student123' : (role === 'organizer' ? 'club123' : 'admin123'), 10),
         role: role || 'student',

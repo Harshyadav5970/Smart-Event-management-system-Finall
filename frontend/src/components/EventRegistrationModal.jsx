@@ -3,7 +3,7 @@
 // Event Registration Modal with Email & Password Authentication and Immediate Pass Generation
 
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Mail, Lock, User, CheckCircle2, QrCode, Download, ArrowRight, ShieldCheck } from 'lucide-react';
+import { X, Sparkles, Mail, Lock, User, CheckCircle2, QrCode, Download, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { api } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import confetti from 'canvas-confetti';
@@ -13,10 +13,11 @@ export default function EventRegistrationModal({ isOpen, onClose, event, onSucce
   const { user, showToast } = useAuth();
   const [loading, setLoading] = useState(false);
   const [createdPass, setCreatedPass] = useState(null);
+  const [formError, setFormError] = useState('');
 
   const [formData, setFormData] = useState({
-    name: user?.name || 'Harsh Yadav',
-    email: user?.email || 'harsh@college.edu',
+    name: user?.name || '',
+    email: user?.email || '',
     password: '',
     rollNo: user?.rollNo || '129',
     department: user?.department || 'Computer Science'
@@ -25,9 +26,10 @@ export default function EventRegistrationModal({ isOpen, onClose, event, onSucce
   useEffect(() => {
     if (isOpen) {
       setCreatedPass(null);
+      setFormError('');
       setFormData({
-        name: user?.name || 'Harsh Yadav',
-        email: user?.email || 'harsh@college.edu',
+        name: user?.name || '',
+        email: user?.email || '',
         password: '',
         rollNo: user?.rollNo || '129',
         department: user?.department || 'Computer Science'
@@ -39,8 +41,17 @@ export default function EventRegistrationModal({ isOpen, onClose, event, onSucce
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
+
     if (!formData.email) {
+      setFormError('Please enter a valid college email.');
       showToast('Please enter a valid college email.', 'warning');
+      return;
+    }
+
+    if (!formData.password) {
+      setFormError('Account password is required to verify your identity and generate a pass.');
+      showToast('Account password is required.', 'warning');
       return;
     }
 
@@ -65,10 +76,14 @@ export default function EventRegistrationModal({ isOpen, onClose, event, onSucce
         showToast(res.message || 'Pass successfully generated!', 'success');
         if (onSuccess) onSuccess(res.data);
       } else {
-        showToast(res.message || 'Registration failed.', 'error');
+        const msg = res.message || 'Registration failed.';
+        setFormError(msg);
+        showToast(msg, 'error');
       }
     } catch (err) {
-      showToast('Error connecting to server', 'error');
+      const msg = err.response?.data?.message || err.message || 'Error connecting to server';
+      setFormError(msg);
+      showToast(msg, 'error');
     } finally {
       setLoading(false);
     }
@@ -150,11 +165,21 @@ export default function EventRegistrationModal({ isOpen, onClose, event, onSucce
                 <p className="text-[11px] text-slate-500 mt-0.5">{event.date} • {event.venue}</p>
               </div>
 
+              {/* Form Error Alert */}
+              {formError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p>{formError}</p>
+                  </div>
+                </div>
+              )}
+
               {/* Single Pass Policy Notice */}
-              <div className="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200/60 text-amber-900 text-[11px] flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+              <div className="p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200/60 text-indigo-900 text-[11px] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-brand-600 shrink-0" />
                 <span>
-                  <strong>1 pass per email id</strong> for this event. You can register multiple times using different emails.
+                  <strong>Identity Check:</strong> Apne registered account ka Email aur Password enter karein. Ek email par sirf 1 pass issue hota hai.
                 </span>
               </div>
 
@@ -167,7 +192,7 @@ export default function EventRegistrationModal({ isOpen, onClose, event, onSucce
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Harsh Yadav"
+                      placeholder="e.g. Student Name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-500 font-medium"
@@ -176,13 +201,13 @@ export default function EventRegistrationModal({ isOpen, onClose, event, onSucce
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">College Email *</label>
+                  <label className="font-bold text-slate-700 block mb-1">Registered College Email *</label>
                   <div className="relative">
                     <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="email"
                       required
-                      placeholder="e.g. harsh@college.edu"
+                      placeholder="e.g. student@college.edu"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-500 font-medium"
@@ -191,19 +216,20 @@ export default function EventRegistrationModal({ isOpen, onClose, event, onSucce
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Account Password / Security PIN</label>
+                  <label className="font-bold text-slate-700 block mb-1">Account Password *</label>
                   <div className="relative">
                     <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="password"
-                      placeholder="Enter password (e.g. student123)"
+                      required
+                      placeholder="Enter your registered account password"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       className="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-500 font-medium"
                     />
                   </div>
                   <p className="text-[10px] text-slate-400 mt-0.5">
-                    Used to verify your existing account or create a new student login.
+                    Security verification: Password must match your registered account.
                   </p>
                 </div>
 

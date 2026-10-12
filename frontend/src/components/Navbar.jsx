@@ -49,47 +49,8 @@ export default function Navbar({ searchQuery, setSearchQuery, onOpenSynopsis }) 
         />
       </div>
 
-      {/* Center/Right: Examiner Quick-Switch & Profile */}
+      {/* Center/Right: Profile & Status */}
       <div className="flex items-center gap-3">
-        {/* Viva Quick Role Switcher Bar */}
-        <div className="hidden lg:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60">
-          <span className="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">
-            Viva Switch:
-          </span>
-          <button
-            onClick={() => demoLogin('student')}
-            title="Fast switch to Student (Harsh Yadav)"
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-              user?.role === 'student'
-                ? 'bg-white text-brand-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            🎓 Student
-          </button>
-          <button
-            onClick={() => demoLogin('organizer')}
-            title="Fast switch to Club Organizer"
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-              user?.role === 'organizer'
-                ? 'bg-white text-indigo-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            ⚡ Organizer
-          </button>
-          <button
-            onClick={() => demoLogin('admin')}
-            title="Fast switch to Faculty Admin"
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-              user?.role === 'admin'
-                ? 'bg-white text-purple-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            🛡️ Admin
-          </button>
-        </div>
 
         {/* Academic Badge */}
         <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-amber-50/80 border border-amber-200/60 rounded-xl text-[11px] text-amber-900 font-semibold">

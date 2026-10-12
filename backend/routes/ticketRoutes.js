@@ -39,7 +39,7 @@ router.post('/register', verifyToken, async (req, res) => {
     // Resolve target email (default to logged-in user if not supplied)
     const targetEmail = (email || req.user.email).toLowerCase().trim();
 
-    // Enforce Rule: Single pass per email ID for that event
+    // Check 1: Strictly 1 pass per email ID per event
     const eventRegistrations = await RegistrationModel.find({ eventId: event._id || event.id });
     const existingForEmail = eventRegistrations.find(
       (r) => r.studentEmail && r.studentEmail.toLowerCase() === targetEmail
@@ -48,35 +48,33 @@ router.post('/register', verifyToken, async (req, res) => {
     if (existingForEmail) {
       return res.status(409).json({
         success: false,
-        message: `Pass already exists! ${targetEmail} is already registered for "${event.title}" (Ticket: ${existingForEmail.ticketId}). Only 1 pass per email is allowed per event.`
+        message: `Pass already exists! "${targetEmail}" is already registered for this event (${existingForEmail.ticketId}). Ek email par sirf 1 pass allowed hai.`
       });
     }
 
-    // Verify or create account for this email
+    // Check 2: Password is required to verify identity
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Account password is required to verify your credentials.'
+      });
+    }
+
+    // Check 3: User must be an existing registered account in the database
     let studentUser = await UserModel.findOne({ email: targetEmail });
-    if (studentUser) {
-      // If a password was provided and not registering for oneself
-      if (password && studentUser._id !== req.user.id) {
-        const isMatch = await bcrypt.compare(password, studentUser.password);
-        if (!isMatch) {
-          return res.status(401).json({
-            success: false,
-            message: 'Invalid password for this account. Please enter the correct password.'
-          });
-        }
-      }
-    } else {
-      // Auto-create student profile if registering with a new email
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password || 'student123', salt);
-      studentUser = await UserModel.create({
-        name: name || targetEmail.split('@')[0],
-        email: targetEmail,
-        password: hashedPassword,
-        role: 'student',
-        rollNo: rollNo || '129',
-        department: department || 'Computer Science',
-        year: 'TYCS-B'
+    if (!studentUser) {
+      return res.status(400).json({
+        success: false,
+        message: `No account found for "${targetEmail}". Is email ka koi account nahi hai, pehle website par Register karein.`
+      });
+    }
+
+    // Check 4: Password must be strictly correct
+    const isMatch = await bcrypt.compare(password, studentUser.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Incorrect password! Galat password dala hai, kripya sahi password enter karein.'
       });
     }
 

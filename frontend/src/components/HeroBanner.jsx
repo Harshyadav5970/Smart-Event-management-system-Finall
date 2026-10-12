@@ -23,15 +23,7 @@ export default function HeroBanner({
         <div className="mesh-shape-3"></div>
       </div>
 
-      {/* Floating Sparkle Pill */}
-      <div className="relative z-10 flex justify-center mb-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-xs text-xs font-bold text-slate-800">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>College Fest 2026</span>
-          <span className="text-slate-300">•</span>
-          <span className="text-brand-600 font-extrabold">TYCS-B</span>
-        </div>
-      </div>
+
 
       {/* Main Title Typography - Concise & Clean */}
       <div className="relative z-10 text-center max-w-2xl mx-auto mb-5">

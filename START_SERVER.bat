@@ -21,7 +21,7 @@ start "EventHub Frontend (Port 5173)" cmd /k "npm run dev"
 timeout /t 2 /nobreak >nul
 
 echo [*] Opening EventHub in your default web browser...
-start http://localhost:5173
+start 
 
 echo.
 echo =======================================================================

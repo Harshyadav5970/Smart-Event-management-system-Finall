@@ -136,9 +136,9 @@ export default function EventCard({
             </button>
             <button
               onClick={() => onRegister(event)}
-              className="w-full py-1 text-[11px] text-slate-500 hover:text-brand-600 font-bold transition-colors text-center cursor-pointer block"
+              className="w-full py-2 px-3 bg-slate-900 hover:bg-brand-600 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
             >
-              + Register another email for this event
+              <span>+ Register Another Student (New Email)</span>
             </button>
           </div>
         ) : (
