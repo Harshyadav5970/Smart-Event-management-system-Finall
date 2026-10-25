@@ -49,15 +49,17 @@ export function AuthProvider({ children }) {
     checkAuth();
   }, [token]);
 
-  // Standard Login
-  const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
+  // Standard Login (supports student or admin portal enforcement)
+  const login = async (email, password, portalRole = null) => {
+    const payload = { email, password };
+    if (portalRole) payload.portalRole = portalRole;
+    const res = await api.post('/auth/login', payload);
     if (res.success && res.token) {
       localStorage.setItem('eventhub_token', res.token);
       setToken(res.token);
       setUser(res.user);
       showToast(res.message || `Welcome back, ${res.user.name}!`, 'success');
-      return { success: true };
+      return { success: true, user: res.user };
     } else {
       showToast(res.message || 'Login failed. Please check credentials.', 'error');
       return { success: false, message: res.message };

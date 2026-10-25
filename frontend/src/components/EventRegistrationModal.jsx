@@ -179,7 +179,7 @@ export default function EventRegistrationModal({ isOpen, onClose, event, onSucce
               <div className="p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200/60 text-indigo-900 text-[11px] flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-brand-600 shrink-0" />
                 <span>
-                  <strong>Identity Check:</strong> Apne registered account ka Email aur Password enter karein. Ek email par sirf 1 pass issue hota hai.
+                  <strong>Identity Check:</strong> Enter your registered account Email & Password. Strictly 1 pass per ID allowed.
                 </span>
               </div>
 

@@ -33,6 +33,18 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    // Validate Admin passcode if registering as Admin
+    const { adminSecretKey } = req.body;
+    if (role === 'admin') {
+      const validKeys = ['ADMIN2026', 'admin123', 'eventhubadmin', 'harsh129'];
+      if (adminSecretKey && !validKeys.includes(adminSecretKey.trim())) {
+        return res.status(403).json({
+          success: false,
+          message: 'Invalid Admin Security Key. Use viva demo passcode: ADMIN2026'
+        });
+      }
+    }
+
     // Hash password securely with salt rounds
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -42,9 +54,9 @@ router.post('/register', async (req, res) => {
       email: cleanEmail,
       password: hashedPassword,
       role: role || 'student',
-      rollNo: rollNo ? rollNo.trim() : '129',
+      rollNo: rollNo ? rollNo.trim() : (role === 'admin' ? 'FAC-ADM' : '129'),
       department: department || 'Computer Science',
-      year: year || 'TYCS-B',
+      year: year || (role === 'admin' ? 'Faculty Administrator' : 'TYCS-B'),
       phone: phone ? phone.trim() : ''
     });
 
@@ -88,7 +100,7 @@ router.post('/register', async (req, res) => {
 // POST /api/auth/login - Student / Organizer / Admin sign in
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, portalRole } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -123,11 +135,27 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    // Role verification if attempting Admin portal login
+    if (portalRole === 'admin' && user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access Denied: This account is registered as a Student. Please switch to the Student Portal or log in with an Admin account.'
+      });
+    }
+
     // Compare encrypted passwords
     let isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      // If Harsh is testing with his personal email, sync password so he never gets locked out
-      if (cleanEmail === 'harshlyadav8105@gmail.com' || cleanEmail === 'harsh@college.edu') {
+      // If Harsh or examiner is testing with standard demo accounts, sync password so they never get locked out
+      const isDemoAccount = [
+        'harshlyadav8105@gmail.com',
+        'harsh@college.edu',
+        'admin@college.edu',
+        'student@college.edu',
+        'techclub@college.edu'
+      ].includes(cleanEmail);
+
+      if (isDemoAccount) {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
         const { getLocalStore, saveLocalStore } = require('../db/dbAdapter');

@@ -3,7 +3,7 @@
 // College Fest Portal 2026
 // Main Application Component with Dual Dashboard Modes & Modals
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
@@ -21,6 +21,7 @@ import { Sparkles } from 'lucide-react';
 function AppContent() {
   const { user, loading, toast } = useAuth();
   const [authView, setAuthView] = useState('login'); // 'login' | 'register'
+  const [authPortal, setAuthPortal] = useState('student'); // 'student' | 'admin'
   const [activeTab, setActiveTab] = useState('browse'); // 'browse' | 'tickets' | 'analytics' | 'announcements'
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -28,14 +29,20 @@ function AppContent() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
   const [isSynopsisOpen, setIsSynopsisOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // When an administrator logs in, automatically open the Admin Panel (analytics tab)
+  useEffect(() => {
+    if (user?.role === 'admin' && activeTab === 'browse') {
+      setActiveTab('analytics');
+    }
+  }, [user?.role]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8F9FD] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-coral-500 animate-spin flex items-center justify-center text-white font-bold text-sm">
-            ⚡
-          </div>
+          <div className="w-9 h-9 rounded-full border-3 border-brand-200 border-t-brand-600 animate-spin"></div>
           <p className="text-xs font-bold text-slate-600">Loading EventHub...</p>
         </div>
       </div>
@@ -63,35 +70,59 @@ function AppContent() {
           </div>
         )}
         {authView === 'register' ? (
-          <Register onSwitchToLogin={() => setAuthView('login')} />
+          <Register
+            initialRole={authPortal}
+            onSwitchToLogin={(role) => {
+              if (role) setAuthPortal(role);
+              setAuthView('login');
+            }}
+          />
         ) : (
-          <Login onSwitchToRegister={() => setAuthView('register')} />
+          <Login
+            initialPortal={authPortal}
+            onSwitchToRegister={(role) => {
+              if (role) setAuthPortal(role);
+              setAuthView('register');
+            }}
+          />
         )}
       </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FD] flex text-slate-900">
-      {/* Left Sidebar (Codeflying style) */}
+    <div className="h-screen w-full flex overflow-hidden bg-[#F8F9FD] text-slate-900">
+      {/* Left Sidebar (Desktop Pinned + Mobile Slide-Out) */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         user={user}
+        isOpen={isMobileSidebarOpen}
+        onClose={() => setIsMobileSidebarOpen(false)}
         onOpenCreateEvent={() => setIsCreateEventOpen(true)}
         onOpenScanner={() => setIsScannerOpen(true)}
         onOpenSynopsis={() => setIsSynopsisOpen(true)}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Mobile Backdrop Overlay */}
+      {isMobileSidebarOpen && (
+        <div
+          onClick={() => setIsMobileSidebarOpen(false)}
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-30 md:hidden transition-opacity"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Main Content Area (Scrolls smoothly with pinned sticky navbar) */}
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
         <Navbar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           onOpenSynopsis={() => setIsSynopsisOpen(true)}
+          onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
         />
 
-        <main className="flex-1 p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
           {/* Render Active View based on Role & Active Tab */}
           {activeTab === 'analytics' && user.role === 'admin' ? (
             <AdminDashboard

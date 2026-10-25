@@ -3,10 +3,16 @@
 @tailwind utilities;
 
 @layer base {
+  html, body, #root {
+    height: 100%;
+  }
+
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     background-color: #F8F9FD;
     color: #0F172A;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
   }
 }
 
@@ -17,6 +23,7 @@
   left: 0;
   right: 0;
   height: 600px;
+  max-width: 100%;
   overflow: hidden;
   pointer-events: none;
   z-index: 0;

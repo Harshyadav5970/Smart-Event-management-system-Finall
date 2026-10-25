@@ -15,7 +15,8 @@ import {
   GraduationCap,
   ShieldCheck,
   CalendarDays,
-  Award
+  Award,
+  X
 } from 'lucide-react';
 
 export default function Sidebar({
@@ -24,7 +25,9 @@ export default function Sidebar({
   user,
   onOpenCreateEvent,
   onOpenScanner,
-  onOpenSynopsis
+  onOpenSynopsis,
+  isOpen = false,
+  onClose = () => {}
 }) {
   const isOrganizerOrAdmin = user && (user.role === 'organizer' || user.role === 'admin');
 
@@ -51,8 +54,8 @@ export default function Sidebar({
     },
     {
       id: 'analytics',
-      label: 'Fest Analytics',
-      icon: BarChart3,
+      label: user?.role === 'admin' ? 'Admin Panel' : 'Fest Analytics',
+      icon: user?.role === 'admin' ? ShieldCheck : BarChart3,
       roles: ['organizer', 'admin']
     },
     {
@@ -64,27 +67,42 @@ export default function Sidebar({
   ];
 
   return (
-    <aside className="w-64 bg-white/90 backdrop-blur-xl border-r border-slate-100 flex flex-col justify-between p-4 min-h-screen shrink-0 z-20">
+    <aside
+      className={`fixed inset-y-0 left-0 z-40 w-64 bg-white/95 backdrop-blur-xl border-r border-slate-200/80 p-4 flex flex-col justify-between overflow-y-auto transition-transform duration-300 md:static md:translate-x-0 md:h-screen md:shrink-0 md:z-20 ${
+        isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
+      }`}
+    >
       <div>
-        {/* Brand Logo matching Codeflying style */}
-        <div className="flex items-center gap-2.5 px-2 py-3 mb-4">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-coral-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20 font-extrabold text-lg">
-            ⚡
-          </div>
+        {/* Brand Header & Mobile Close Button */}
+        <div className="flex items-center justify-between px-2 py-3 mb-4">
           <div>
-            <h1 className="font-extrabold text-xl tracking-tight text-slate-900 leading-none">
-              EVENT<span className="text-brand-600">HUB</span>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 leading-none flex items-center">
+              <span>Event</span>
+              <span className="bg-gradient-to-r from-brand-600 to-indigo-600 bg-clip-text text-transparent">
+                Hub
+              </span>
+              <span className="w-2 h-2 rounded-full bg-brand-500 ml-1 mb-0.5 inline-block"></span>
             </h1>
-            <p className="text-[10px] font-medium text-slate-400 tracking-wider uppercase mt-0.5">
-              Smart Fest System
+            <p className="text-[10px] font-semibold text-slate-400 tracking-wider uppercase mt-1">
+              Smart Fest Management
             </p>
           </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 md:hidden cursor-pointer"
+            title="Close navigation"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Primary CTA Button matching the image box (+ Create New App style) */}
         {isOrganizerOrAdmin ? (
           <button
-            onClick={onOpenCreateEvent}
+            onClick={() => {
+              onClose();
+              onOpenCreateEvent();
+            }}
             className="w-full mb-6 p-3 rounded-2xl border-2 border-slate-900/10 hover:border-brand-500/40 bg-gradient-to-b from-white to-slate-50/80 hover:to-brand-50/40 shadow-sm transition-all duration-200 flex flex-col items-center justify-center gap-2 group cursor-pointer"
           >
             <div className="w-10 h-10 rounded-xl bg-slate-900 group-hover:bg-brand-600 flex items-center justify-center text-white transition-colors duration-200 shadow-sm">
@@ -96,7 +114,10 @@ export default function Sidebar({
           </button>
         ) : (
           <button
-            onClick={() => setActiveTab('browse')}
+            onClick={() => {
+              onClose();
+              setActiveTab('browse');
+            }}
             className="w-full mb-6 p-3 rounded-2xl border border-slate-200/80 bg-white hover:border-brand-300 shadow-sm transition-all duration-200 flex flex-col items-center justify-center gap-2 group cursor-pointer"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-sm">
@@ -120,6 +141,7 @@ export default function Sidebar({
                 <button
                   key={item.id}
                   onClick={() => {
+                    onClose();
                     if (item.id === 'scanner') {
                       onOpenScanner();
                     } else {
@@ -175,7 +197,10 @@ export default function Sidebar({
           </p>
 
           <button
-            onClick={onOpenSynopsis}
+            onClick={() => {
+              onClose();
+              onOpenSynopsis();
+            }}
             className="mt-2.5 w-full py-1.5 px-2 bg-white hover:bg-slate-50 text-slate-900 rounded-xl text-[11px] font-bold shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1 cursor-pointer"
           >
             <span>Project Details</span>

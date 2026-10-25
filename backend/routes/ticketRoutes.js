@@ -48,7 +48,7 @@ router.post('/register', verifyToken, async (req, res) => {
     if (existingForEmail) {
       return res.status(409).json({
         success: false,
-        message: `Pass already exists! "${targetEmail}" is already registered for this event (${existingForEmail.ticketId}). Ek email par sirf 1 pass allowed hai.`
+        message: 'Already registered from this ID'
       });
     }
 

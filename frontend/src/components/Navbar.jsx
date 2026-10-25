@@ -1,8 +1,3 @@
-// Harsh Yadav - TYCS Roll 129
-// EventHub: Smart College Event & Fest Management System
-// College Fest Portal 2026
-// Top Navbar with Viva Fast Role Switcher & Student Profile
-
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -13,14 +8,20 @@ import {
   User,
   Shield,
   Layers,
-  GraduationCap
+  GraduationCap,
+  Menu
 } from 'lucide-react';
 
-export default function Navbar({ searchQuery, setSearchQuery, onOpenSynopsis }) {
+export default function Navbar({
+  searchQuery,
+  setSearchQuery,
+  onOpenSynopsis,
+  onToggleMobileSidebar
+}) {
   const { user, logout, demoLogin, toast } = useAuth();
 
   return (
-    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-3 flex items-center justify-between">
+    <header className="sticky top-0 z-20 bg-white/85 backdrop-blur-md border-b border-slate-100 px-4 sm:px-6 py-3 flex items-center justify-between">
       {/* Toast Notification Banner (Floating top right) */}
       {toast && (
         <div
@@ -37,16 +38,27 @@ export default function Navbar({ searchQuery, setSearchQuery, onOpenSynopsis }) 
         </div>
       )}
 
-      {/* Search Input Bar */}
-      <div className="relative w-80 max-w-full">
-        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search Hackathon, RoboWars, venues..."
-          className="w-full pl-9 pr-4 py-1.5 bg-slate-100/80 hover:bg-slate-100 focus:bg-white text-xs rounded-xl border border-transparent focus:border-brand-500/30 focus:outline-none transition-all placeholder:text-slate-400"
-        />
+      {/* Left side: Mobile Toggle & Search Input Bar */}
+      <div className="flex items-center gap-2.5 flex-1 min-w-0 mr-3">
+        <button
+          onClick={onToggleMobileSidebar}
+          className="p-1.5 -ml-1 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 md:hidden cursor-pointer shrink-0"
+          title="Open Menu"
+          aria-label="Toggle Navigation"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        <div className="relative w-full max-w-xs sm:max-w-md">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search Hackathon, RoboWars, venues..."
+            className="w-full pl-9 pr-4 py-1.5 bg-slate-100/80 hover:bg-slate-100 focus:bg-white text-xs rounded-xl border border-transparent focus:border-brand-500/30 focus:outline-none transition-all placeholder:text-slate-400"
+          />
+        </div>
       </div>
 
       {/* Center/Right: Profile & Status */}

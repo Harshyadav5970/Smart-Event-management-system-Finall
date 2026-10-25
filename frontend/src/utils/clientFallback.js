@@ -34,6 +34,18 @@ const INITIAL_DATA = {
       phone: '+91 98765 43210'
     },
     {
+      id: 'usr_student_demo',
+      _id: 'usr_student_demo',
+      name: 'College Student (Demo)',
+      email: 'student@college.edu',
+      password: 'password123',
+      role: 'student',
+      rollNo: '129',
+      department: 'Computer Science',
+      year: 'TYCS-B',
+      phone: '+91 98765 43210'
+    },
+    {
       id: 'usr_techclub',
       _id: 'usr_techclub',
       name: 'Tech Council & Robotics Club',
@@ -297,6 +309,13 @@ export async function handleClientFallback(endpoint, options = {}) {
       };
     }
 
+    if (body.portalRole === 'admin' && user.role !== 'admin') {
+      return {
+        success: false,
+        message: 'Access Denied: This account is registered as a Student. Please switch to the Student Portal or log in with an Admin account.'
+      };
+    }
+
     const mockToken = 'mock_jwt_' + btoa(cleanEmail) + '_' + Date.now();
     localStorage.setItem('eventhub_token', mockToken);
     localStorage.setItem('eventhub_current_user', JSON.stringify(user));
@@ -320,6 +339,16 @@ export async function handleClientFallback(endpoint, options = {}) {
       };
     }
 
+    if (body.role === 'admin') {
+      const validKeys = ['ADMIN2026', 'admin123', 'eventhubadmin', 'harsh129'];
+      if (body.adminSecretKey && !validKeys.includes(body.adminSecretKey.trim())) {
+        return {
+          success: false,
+          message: 'Invalid Admin Security Key. Use viva demo passcode: ADMIN2026'
+        };
+      }
+    }
+
     const newId = 'usr_' + Date.now().toString(36);
     const newUser = {
       id: newId,
@@ -328,9 +357,9 @@ export async function handleClientFallback(endpoint, options = {}) {
       email: cleanEmail,
       password: body.password || 'password123',
       role: body.role || 'student',
-      rollNo: body.rollNo || '129',
+      rollNo: body.rollNo ? body.rollNo.trim() : (body.role === 'admin' ? 'FAC-ADM' : '129'),
       department: body.department || 'Computer Science',
-      year: body.year || 'TYCS-B',
+      year: body.year || (body.role === 'admin' ? 'Faculty Administrator' : 'TYCS-B'),
       phone: body.phone || ''
     };
 
@@ -459,7 +488,7 @@ export async function handleClientFallback(endpoint, options = {}) {
     if (existing) {
       return {
         success: false,
-        message: `Pass already exists for "${targetEmail}"! Ek email ID par sirf 1 pass allowed hai.`
+        message: 'Already registered from this ID'
       };
     }
 
